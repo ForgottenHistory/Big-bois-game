@@ -20,28 +20,26 @@ public class PlayerUsable : MonoBehaviour
     // UPDATE
     ////////////////////////////////////////////////////////////////
 
-    private void Update()
+private void Update()
+{
+    if (usable != null)
     {
-        //hold usable
-        if (usable != null && usable.hold == true && Input.GetKey(KeyCode.E))
-        {
-            usable.Use();
-        }
-        //not hold usable
-        if (usable != null && usable.hold == false && Input.GetKeyDown(KeyCode.E))
+        bool isHold = usable.hold;
+        bool eKeyPressed = isHold ? Input.GetKey(KeyCode.E) : Input.GetKeyDown(KeyCode.E);
+
+        if (eKeyPressed)
         {
             usable.Use();
         }
 
-        if(usable != null)
-        {
-            useText.SetActive(true);
-        }
-        else
-        {
-            useText.SetActive(false);
-        }
+        useText.SetActive(true);
     }
+    else
+    {
+        useText.SetActive(false);
+    }
+}
+
 
     ////////////////////////////////////////////////////////////////
     //
