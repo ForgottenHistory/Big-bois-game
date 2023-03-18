@@ -31,19 +31,5 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(transform.right * Time.deltaTime * speed);
         }
-
-        Sprint();
-    }
-
-    void Sprint()
-    {
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            speed = 10f;
-        }
-        else
-        {
-            speed = 5f;
-        }
     }
 }
