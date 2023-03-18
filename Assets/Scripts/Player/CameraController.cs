@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float mouseSensitivity = 0.5f;
+
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;   
     }
 
-    // Update is called once per frame
     void Update()
     {
         MouseLook();
@@ -23,10 +23,10 @@ public class CameraController : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y");
 
         Vector3 newRotation = transform.localEulerAngles;
-        newRotation.x -= mouseY;
-        newRotation.y += mouseX;
+        newRotation.x -= mouseY * mouseSensitivity;
+        newRotation.y += mouseX * mouseSensitivity;
         transform.localEulerAngles = newRotation;
 
-        transform.parent.Rotate(Vector3.up * mouseX);
+        transform.parent.Rotate(Vector3.up * mouseX * mouseSensitivity);
     }
 }
