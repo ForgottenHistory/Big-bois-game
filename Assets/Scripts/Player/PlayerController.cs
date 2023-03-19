@@ -5,11 +5,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;
+    Rigidbody rb = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -31,5 +32,10 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(transform.right * Time.deltaTime * speed);
         }
+    }
+
+    void FixedUpdate()
+    {
+        rb.velocity = Vector3.zero;
     }
 }
