@@ -8,9 +8,14 @@ using FishNet.Connection;
 using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Transporting.Tugboat;
+using FishNet.Object.Synchronizing;
 
 public class MainMenuUI : MonoBehaviour
 {
+    /////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC VARIABLES
+    /////////////////////////////////////////////////////////////////////////////////////
+
     public GameObject LobbyMenu;
     public GameObject MainMenu;
     public GameObject SettingsMenu;
@@ -19,10 +24,27 @@ public class MainMenuUI : MonoBehaviour
 
     public TMP_InputField IPInputField;
     public TMP_InputField PortInputField;
+    public TMP_InputField PlayerNameInputField;
 
     public TMP_Text playerListTxt;
 
+    public GameObject startBtn;
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE VARIABLES
+    /////////////////////////////////////////////////////////////////////////////////////
+
     int playerCount = 0;
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //
+    //                                  FUNCTIONS
+    //
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // START 
+    /////////////////////////////////////////////////////////////////////////////////////
 
     void Start()
     {
@@ -32,19 +54,24 @@ public class MainMenuUI : MonoBehaviour
         playerListTxt.text = "";
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+
     public void EnableMenu(GameObject menu)
     {
-
         LobbyMenu.SetActive(false);
         MainMenu.SetActive(false);
         SettingsMenu.SetActive(false);
         menu.SetActive(true);
+        ConnectInfoMenu.SetActive(true);
+        LobbyInfoMenu.SetActive(false);
 
         if (InstanceFinder.IsClient)
             InstanceFinder.ClientManager.StopConnection();
-        else if (InstanceFinder.IsServer)
+        if (InstanceFinder.IsServer)
             InstanceFinder.ServerManager.StopConnection(false);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void ChangeIpOnTugboat(string ip)
     {
@@ -53,16 +80,12 @@ public class MainMenuUI : MonoBehaviour
         tugboatTransport.SetClientAddress(ip);
     }
 
-    public void JoinLobby()
-    {
-
-        ChangeIpOnTugboat(IPInputField.text);
-        InstanceFinder.ClientManager.StartConnection(IPInputField.text);
-    }
+    /////////////////////////////////////////////////////////////////////////////////////
+    // START SERVER/ JOIN AS CLIENT
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void CreateServer()
     {
-
         ChangeIpOnTugboat("localhost");
         bool result = InstanceFinder.ServerManager.StartConnection();
         Debug.Log("Server started: " + result);
@@ -73,26 +96,63 @@ public class MainMenuUI : MonoBehaviour
             return;
         }
 
-        CreateLobby();
+        InstanceFinder.ClientManager.StartConnection("localhost");
     }
 
-    void CreateLobby()
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void JoinLobby()
+    {
+
+        ChangeIpOnTugboat(IPInputField.text);
+        InstanceFinder.ClientManager.StartConnection(IPInputField.text);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // LOBBY FUNCTIONS
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void SwitchToLobby()
     {
         ConnectInfoMenu.SetActive(false);
         LobbyInfoMenu.SetActive(true);
-    }
 
-    public void UpdatePlayerListTxt(int newPlayer)
-    {
-        playerCount += newPlayer;
-        for (int i = 0; i < playerCount; i++)
-        {
-            playerListTxt.text += "Player " + (i+1) + "\n";
+        if( InstanceFinder.IsHost){
+            startBtn.SetActive(true);
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void DisconnectFromLobby(){
+        if (InstanceFinder.IsClient)
+            InstanceFinder.ClientManager.StopConnection();
+        if (InstanceFinder.IsServer)
+            InstanceFinder.ServerManager.StopConnection(false);
+        EnableMenu(MainMenu);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // LOBBY INFO FUNCTIONS
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void UpdatePlayerListTxt(List<string> playerList)
+    {
+        playerListTxt.text = "";
+        foreach (string player in playerList)
+        {
+            playerListTxt.text += player + "\n";
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // DISCONNECT / QUIT GAME
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void QuitGame()
     {
         Application.Quit();
     }
+    
+    /////////////////////////////////////////////////////////////////////////////////////
 }
