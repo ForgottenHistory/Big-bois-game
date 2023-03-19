@@ -16,6 +16,11 @@ public class PlayerUsable : MonoBehaviour
     [SerializeField]
     GameObject useText;
 
+    void Start(){
+        useText = GameObject.Find("UseText");
+        useText.SetActive(false);
+    }
+
     ////////////////////////////////////////////////////////////////
     // UPDATE
     ////////////////////////////////////////////////////////////////
