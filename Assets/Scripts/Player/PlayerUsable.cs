@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerUsable : MonoBehaviour
+public class PlayerUsable : MonoBehaviour, IInitialize
 {
     ////////////////////////////////////////////////////////////////
     //
@@ -12,39 +12,54 @@ public class PlayerUsable : MonoBehaviour
     //
     ////////////////////////////////////////////////////////////////
 
-    Usable usable;
-    [SerializeField]
-    GameObject useText;
+    Usable usable = null;
+    GameObject useText = null;
 
-    void Start(){
+    public bool isActive { get; set; } = false;
+
+    ////////////////////////////////////////////////////////////////
+
+    public void Initialize()
+    {
         useText = GameObject.Find("UseText");
+        if (useText == null)
+        {
+            Debug.LogError("No use text found!");
+        }
         useText.SetActive(false);
+        isActive = true;
+    }
+
+    public void Deinitialize()
+    {
     }
 
     ////////////////////////////////////////////////////////////////
     // UPDATE
     ////////////////////////////////////////////////////////////////
 
-private void Update()
-{
-    if (usable != null)
+    private void Update()
     {
-        bool isHold = usable.hold;
-        bool eKeyPressed = isHold ? Input.GetKey(KeyCode.E) : Input.GetKeyDown(KeyCode.E);
+        if (isActive == false)
+            return;
 
-        if (eKeyPressed)
+        if (usable != null && useText != null)
         {
-            usable.Use();
+            bool isHold = usable.hold;
+            bool eKeyPressed = isHold ? Input.GetKey(KeyCode.E) : Input.GetKeyDown(KeyCode.E);
+
+            if (eKeyPressed)
+            {
+                usable.Use();
+            }
+
+            useText.SetActive(true);
         }
-
-        useText.SetActive(true);
+        else if (useText != null)
+        {
+            useText.SetActive(false);
+        }
     }
-    else
-    {
-        useText.SetActive(false);
-    }
-}
-
 
     ////////////////////////////////////////////////////////////////
     //
@@ -54,12 +69,12 @@ private void Update()
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<Usable>() != null)
+        if (other.GetComponent<Usable>() != null)
         {
-            if(usable != null)
+            if (usable != null)
             {
                 //is closer than current usable?
-                if(Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usable.transform.position, transform.position))
+                if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usable.transform.position, transform.position))
                 {
                     usable = other.GetComponent<Usable>();
                 }
@@ -98,6 +113,6 @@ private void Update()
     {
         usable = null;
     }
-    
+
     ////////////////////////////////////////////////////////////////
 }

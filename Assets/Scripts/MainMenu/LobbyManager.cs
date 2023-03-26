@@ -7,6 +7,7 @@ using FishNet.Managing.Scened;
 using FishNet.Object.Synchronizing;
 using FishNet.Connection;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -31,7 +32,7 @@ public class LobbyManager : NetworkBehaviour
 
     [SyncObject]
     readonly SyncDictionary<int, PlayerContainer> playerContainers = new();
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
     //
     //                                  FUNCTIONS
@@ -52,7 +53,7 @@ public class LobbyManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        Debug.Log("Server started");
+        //Debug.Log("Server started");
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +61,7 @@ public class LobbyManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Debug.Log("Client started");
+        //Debug.Log("Client started");
 
         mainMenuUI.SwitchToLobby();
         ServerAddPlayer(LocalConnection.ClientId, mainMenuUI.PlayerNameInputField.text);
@@ -78,13 +79,19 @@ public class LobbyManager : NetworkBehaviour
         pc.PlayerName = playerName;
         playerContainers.Add(id, pc);
     }
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Sent to all clients
     [ObserversRpc]
     void UpdatePlayerListTxtRpc()
     {
+        if (InstanceFinder.ServerManager.isActiveAndEnabled == false)
+        {
+            Debug.LogWarning("Server is not active. Cannot update the player list.");
+            return;
+        }
+
         mainMenuUI.UpdatePlayerListTxt(playerContainers.Values.Select(pc => pc.PlayerName).ToList());
     }
 
@@ -115,20 +122,20 @@ public class LobbyManager : NetworkBehaviour
     // SCENE MANAGEMENT
     /////////////////////////////////////////////////////////////////////////////////////
 
-
+    [Server]
     public void SwitchScene(string sceneName)
     {
-        //Make scene data
         SceneLoadData sld = new SceneLoadData(sceneName);
         sld.ReplaceScenes = ReplaceOption.All;
 
         LoadOptions loadOptions = new LoadOptions
         {
             AutomaticallyUnload = true,
+            AllowStacking = false,
         };
 
-        sld.Options = loadOptions;
-        InstanceFinder.SceneManager.LoadGlobalScenes(sld);
+        //sld.Options = loadOptions;
+        SceneManager.LoadGlobalScenes(sld);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////

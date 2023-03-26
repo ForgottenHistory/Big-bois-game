@@ -9,6 +9,7 @@ using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Transporting.Tugboat;
 using FishNet.Object.Synchronizing;
+using System.Threading.Tasks;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -34,7 +35,6 @@ public class MainMenuUI : MonoBehaviour
     // PRIVATE VARIABLES
     /////////////////////////////////////////////////////////////////////////////////////
 
-    int playerCount = 0;
 
     /////////////////////////////////////////////////////////////////////////////////////
     //
@@ -84,7 +84,7 @@ public class MainMenuUI : MonoBehaviour
     // START SERVER/ JOIN AS CLIENT
     /////////////////////////////////////////////////////////////////////////////////////
 
-    public void CreateServer()
+    public async void CreateServer()
     {
         ChangeIpOnTugboat("localhost");
         bool result = InstanceFinder.ServerManager.StartConnection();
@@ -96,6 +96,7 @@ public class MainMenuUI : MonoBehaviour
             return;
         }
 
+        await Task.Delay(500); // Wait to avoid race condition
         InstanceFinder.ClientManager.StartConnection("localhost");
     }
 
