@@ -15,19 +15,24 @@ public class GameManager : NetworkBehaviour, IInitialize
 
     public static GameManager Instance { get; private set; }
 
-    public GameObject player; 
+    public GameObject player;
 
     float startupTime = 2f;
 
     public Transform spawnPointsParent;
-    
+
     public bool isActive { get; set; } = true;
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
     // PRIVATE VARIABLES 
     /////////////////////////////////////////////////////////////////////////////////////
+    
+    int nextSpawnIndex = 0;
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     List<Vector3> spawnPoints = new List<Vector3>();
+    List<PlayerController> players = new List<PlayerController>();
 
     ServerManager serverManager;
 
@@ -37,25 +42,29 @@ public class GameManager : NetworkBehaviour, IInitialize
     {
         /////////////////////////////////////////////////////////////////////////////////////
 
-        if (spawnPointsParent != null) {
-            foreach (Transform t in spawnPointsParent) {
+        if (spawnPointsParent != null)
+        {
+            foreach (Transform t in spawnPointsParent)
+            {
                 spawnPoints.Add(t.position);
             }
-        } else {
+        }
+        else
+        {
             Debug.LogError("No spawn points parent set!");
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
 
         serverManager = InstanceFinder.ServerManager;
-        foreach( int playerID in NetworkManager.ClientManager.Clients.Keys )
+        foreach (int playerID in NetworkManager.ClientManager.Clients.Keys)
         {
             NetworkConnection conn = NetworkManager.ClientManager.Clients[playerID];
             SpawnPlayerRpc(conn);
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
-        
+
         StartGameClientRPC();
     }
 
@@ -79,7 +88,7 @@ public class GameManager : NetworkBehaviour, IInitialize
     public override void OnStartServer()
     {
         base.OnStartServer();
-        //StartCoroutine(InitializeCoroutine());
+        StartCoroutine(InitializeCoroutine());
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -90,25 +99,35 @@ public class GameManager : NetworkBehaviour, IInitialize
     {
         base.OnStartClient();
         Instance = this;
-    }    
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////
 
     [Server]
-    public void SpawnPlayerRpc( NetworkConnection conn ){
-        GameObject p = GameObject.Instantiate( player, spawnPoints[ Random.Range( 0, spawnPoints.Count) ], Quaternion.identity );
-        serverManager.Spawn( p, conn );
+    public void SpawnPlayerRpc(NetworkConnection conn)
+    {
+        GameObject p = GameObject.Instantiate(player, spawnPoints[nextSpawnIndex], Quaternion.identity);
+        serverManager.Spawn(p, conn);
+        p.GetComponent<PlayerController>().Initialize();
+        players.Add(p.GetComponent<PlayerController>());
+
+        nextSpawnIndex++;
+        if(nextSpawnIndex >= spawnPoints.Count)
+        {
+            nextSpawnIndex = 0;
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
 
     [ObserversRpc]
-    void StartGameClientRPC() {
+    void StartGameClientRPC()
+    {
         GameObject startupScreen = GameObject.Find("StartupScreen");
-        if( startupScreen == null )
+        if (startupScreen == null)
             Debug.LogError("No object with name StartupScreen found!");
-        GameObject.Find("StartupScreen").SetActive( false );
+        GameObject.Find("StartupScreen").SetActive(false);
     }
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
 }

@@ -1,17 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using FishNet;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, IInitialize
 {
+    /////////////////////////////////////////////////////////////////////////////////////
+ 
     public float mouseSensitivity = 0.5f;
     public float verticalLimit = 60f;
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     private Transform playerTransform;
     private Quaternion originalRotation;
     private float currentVerticalRotation = 0f;
 
-    void Start()
+    public bool isActive { get; set; } = false;
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+
+    public void Initialize()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -19,12 +29,25 @@ public class CameraController : MonoBehaviour
         // Store the player's transform and the camera's original rotation
         playerTransform = transform.parent;
         originalRotation = transform.localRotation;
+
+        isActive = true;
     }
+
+    public void Deinitialize()
+    {
+        isActive = false;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     void LateUpdate()
     {
+        if( isActive == false ) return;
+        
         MouseLook();
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     void MouseLook()
     {
@@ -45,4 +68,6 @@ public class CameraController : MonoBehaviour
         Quaternion playerRotation = Quaternion.AngleAxis(mouseX * mouseSensitivity, Vector3.up);
         playerTransform.localRotation *= playerRotation;
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 }

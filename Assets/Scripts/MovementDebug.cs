@@ -16,6 +16,7 @@ public class MovementDebug : NetworkBehaviour
 
     void Update()
     {
+        if( IsHost == false ) return;
         // Calculate the horizontal offset based on time and amplitude
         float horizontalOffset = Mathf.Sin(Time.time * speed + timeOffset) * amplitude;
 

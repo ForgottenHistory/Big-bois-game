@@ -25,6 +25,7 @@ public class PlayerUsable : MonoBehaviour, IInitialize
         if (useText == null)
         {
             Debug.LogError("No use text found!");
+            return;
         }
         useText.SetActive(false);
         isActive = true;

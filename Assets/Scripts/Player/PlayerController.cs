@@ -21,32 +21,26 @@ public class PlayerController : NetworkBehaviour, IInitialize
     private CharacterController characterController;
     private Vector3 velocity = Vector3.zero;
 
-    public bool isActive { get; set; } = false; 
-
+    public bool isActive { get; set; } = false;
     /////////////////////////////////////////////////////////////////////////////////////
     // START
     /////////////////////////////////////////////////////////////////////////////////////
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        if (IsOwner == true)
-        {
-            Initialize();
-            Debug.Log("Started Player for " + OwnerId);
-        }
-        else
-        {
-            Deinitialize();
-        }
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
+    [ObserversRpc]
     public void Initialize()
-    {
+    {  
+        if (IsOwner != true)
+        {
+            Debug.Log("Deinitialize");
+            Deinitialize();
+            return;
+        }
+        Debug.Log("IsOwner: " + IsOwner );
+        Debug.Log( "ClientId" + LocalConnection.ClientId);
         characterController = GetComponent<CharacterController>();
-        transform.GetChild(0).GetComponent<PlayerUsable>().Initialize();
+        GameObject cameraObj = transform.GetChild(0).gameObject;
+        cameraObj.GetComponent<CameraController>().Initialize();
+        cameraObj.GetComponent<PlayerUsable>().Initialize();
         isActive = true;
     }
 
@@ -57,9 +51,10 @@ public class PlayerController : NetworkBehaviour, IInitialize
     public void Deinitialize()
     {
         GameObject cameraObj = transform.GetChild(0).gameObject;
-        cameraObj.GetComponent<PlayerUsable>().enabled = false;
-        cameraObj.GetComponent<AudioListener>().enabled = false;
-        cameraObj.SetActive(false);
+        // cameraObj.GetComponent<PlayerUsable>().Deinitialize();
+        // cameraObj.GetComponent<AudioListener>().enabled = false;
+        // cameraObj.SetActive(false);
+        Destroy(cameraObj);
         isActive = false;
     }
 

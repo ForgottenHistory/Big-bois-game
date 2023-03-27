@@ -8,6 +8,8 @@ using FishNet.Object.Synchronizing;
 using FishNet.Connection;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using FishNet.Transporting.Tugboat;
+using System.Threading.Tasks;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -65,6 +67,40 @@ public class LobbyManager : NetworkBehaviour
 
         mainMenuUI.SwitchToLobby();
         ServerAddPlayer(LocalConnection.ClientId, mainMenuUI.PlayerNameInputField.text);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void ChangeIpOnTugboat(string ip)
+    {
+        Tugboat tugboatTransport = InstanceFinder.NetworkManager.GetComponent<Tugboat>();
+        tugboatTransport.SetClientAddress(ip);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void JoinLobby(string ip = "localhost")
+    {
+        ChangeIpOnTugboat(ip);
+        InstanceFinder.ClientManager.StartConnection(ip);
+    }
+    
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public async void CreateServer()
+    {
+        ChangeIpOnTugboat("localhost");
+        bool result = InstanceFinder.ServerManager.StartConnection();
+        Debug.Log("Server started: " + result);
+
+        if (result == false)
+        {
+            Debug.LogError("Server failed to start.");
+            return;
+        }
+
+        await Task.Delay(500); // Wait to avoid race condition
+        InstanceFinder.ClientManager.StartConnection("localhost");
     }
 
     /////////////////////////////////////////////////////////////////////////////////////

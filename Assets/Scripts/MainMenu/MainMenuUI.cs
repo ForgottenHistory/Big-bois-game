@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using FishNet;
-using FishNet.Connection;
-using FishNet.Managing.Server;
-using FishNet.Object;
+using FishNet.Managing;
+using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
 using FishNet.Object.Synchronizing;
 using System.Threading.Tasks;
@@ -35,6 +34,9 @@ public class MainMenuUI : MonoBehaviour
     // PRIVATE VARIABLES
     /////////////////////////////////////////////////////////////////////////////////////
 
+    private NetworkManager networkManager;
+    private LocalConnectionState clientState = LocalConnectionState.Stopped;
+    private LocalConnectionState serverState = LocalConnectionState.Stopped;
 
     /////////////////////////////////////////////////////////////////////////////////////
     //
@@ -48,10 +50,27 @@ public class MainMenuUI : MonoBehaviour
 
     void Start()
     {
-
         EnableMenu(MainMenu);
         Tugboat tugboatTransport = InstanceFinder.NetworkManager.GetComponent<Tugboat>();
         playerListTxt.text = "";
+
+        networkManager = FindObjectOfType<NetworkManager>();
+        if (networkManager == null)
+        {
+            Debug.LogError("NetworkManager not found, BasicNetworkManager will not function.");
+        }
+
+        networkManager.ServerManager.OnServerConnectionState += ServerManager_OnServerConnectionState;
+        networkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
+    }
+
+    private void OnDestroy()
+    {
+        if (networkManager == null)
+            return;
+
+        networkManager.ServerManager.OnServerConnectionState -= ServerManager_OnServerConnectionState;
+        networkManager.ClientManager.OnClientConnectionState -= ClientManager_OnClientConnectionState;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -75,38 +94,8 @@ public class MainMenuUI : MonoBehaviour
 
     public void ChangeIpOnTugboat(string ip)
     {
-
         Tugboat tugboatTransport = InstanceFinder.NetworkManager.GetComponent<Tugboat>();
         tugboatTransport.SetClientAddress(ip);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    // START SERVER/ JOIN AS CLIENT
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public async void CreateServer()
-    {
-        ChangeIpOnTugboat("localhost");
-        bool result = InstanceFinder.ServerManager.StartConnection();
-        Debug.Log("Server started: " + result);
-
-        if (result == false)
-        {
-            Debug.LogError("Server failed to start.");
-            return;
-        }
-
-        await Task.Delay(500); // Wait to avoid race condition
-        InstanceFinder.ClientManager.StartConnection("localhost");
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public void JoinLobby()
-    {
-
-        ChangeIpOnTugboat(IPInputField.text);
-        InstanceFinder.ClientManager.StartConnection(IPInputField.text);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -118,21 +107,13 @@ public class MainMenuUI : MonoBehaviour
         ConnectInfoMenu.SetActive(false);
         LobbyInfoMenu.SetActive(true);
 
-        if( InstanceFinder.IsHost){
+        Debug.Log("IsHost: " + InstanceFinder.IsServer);
+        if (InstanceFinder.IsServer)
+        {
             startBtn.SetActive(true);
         }
     }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public void DisconnectFromLobby(){
-        if (InstanceFinder.IsClient)
-            InstanceFinder.ClientManager.StopConnection();
-        if (InstanceFinder.IsServer)
-            InstanceFinder.ServerManager.StopConnection(false);
-        EnableMenu(MainMenu);
-    }
-
+    
     /////////////////////////////////////////////////////////////////////////////////////
     // LOBBY INFO FUNCTIONS
     /////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +128,95 @@ public class MainMenuUI : MonoBehaviour
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
+    // START HOST / LOBBY
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public async void StartLobby()
+    {
+        if (networkManager == null)
+            return;
+
+        if (serverState != LocalConnectionState.Stopped)
+        {
+            Debug.LogWarning("Server is already started.");
+            return;
+        }
+        networkManager.ServerManager.StartConnection();
+        await Task.Delay(500); // Wait to avoid race condition
+        
+        StartClient();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void StopServer()
+    {
+        if (networkManager == null)
+            return;
+
+        if (serverState != LocalConnectionState.Stopped)
+        {
+            networkManager.ServerManager.StopConnection(true);
+        }
+        else
+        {
+            Debug.LogWarning("Server is not started.");
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // JOIN AS CLIENT
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void StartClient()
+    {
+        if (networkManager == null)
+            return;
+
+        if (clientState == LocalConnectionState.Stopped)
+        {
+            networkManager.ClientManager.StartConnection();
+            SwitchToLobby();
+        }
+        else
+        {
+            Debug.LogWarning("Client is already started.");
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void StopClient()
+    {
+        if (networkManager == null)
+            return;
+
+        if (clientState != LocalConnectionState.Stopped)
+        {
+            networkManager.ClientManager.StopConnection();
+        }
+        else
+        {
+            Debug.LogWarning("Client is not started.");
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // EVENTS
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs obj)
+    {
+        clientState = obj.ConnectionState;
+    }
+
+
+    private void ServerManager_OnServerConnectionState(ServerConnectionStateArgs obj)
+    {
+        serverState = obj.ConnectionState;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
     // DISCONNECT / QUIT GAME
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -154,6 +224,6 @@ public class MainMenuUI : MonoBehaviour
     {
         Application.Quit();
     }
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
 }
