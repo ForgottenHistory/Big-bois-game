@@ -15,7 +15,7 @@ public class GameManager : NetworkBehaviour, IInitialize
 
     public static GameManager Instance { get; private set; }
 
-    public GameObject player;
+    public NetworkObject player;
 
     float startupTime = 2f;
 
@@ -38,6 +38,7 @@ public class GameManager : NetworkBehaviour, IInitialize
 
     /////////////////////////////////////////////////////////////////////////////////////
 
+
     public void Initialize()
     {
         /////////////////////////////////////////////////////////////////////////////////////
@@ -57,9 +58,9 @@ public class GameManager : NetworkBehaviour, IInitialize
         /////////////////////////////////////////////////////////////////////////////////////
 
         serverManager = InstanceFinder.ServerManager;
-        foreach (int playerID in NetworkManager.ClientManager.Clients.Keys)
+        foreach (int playerID in serverManager.Clients.Keys)
         {
-            NetworkConnection conn = NetworkManager.ClientManager.Clients[playerID];
+            NetworkConnection conn = serverManager.Clients[playerID];
             SpawnPlayerRpc(conn);
         }
 
@@ -106,8 +107,12 @@ public class GameManager : NetworkBehaviour, IInitialize
     [Server]
     public void SpawnPlayerRpc(NetworkConnection conn)
     {
-        GameObject p = GameObject.Instantiate(player, spawnPoints[nextSpawnIndex], Quaternion.identity);
-        serverManager.Spawn(p, conn);
+        NetworkObject p = Instantiate(player, spawnPoints[nextSpawnIndex], Quaternion.identity);
+        ServerManager.Spawn(p, conn);
+
+        //GameObject p = GameObject.Instantiate(player, spawnPoints[nextSpawnIndex], Quaternion.identity);
+        //serverManager.Spawn(p, conn);
+        
         p.GetComponent<PlayerController>().Initialize();
         players.Add(p.GetComponent<PlayerController>());
 

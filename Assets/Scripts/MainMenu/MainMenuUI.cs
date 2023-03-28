@@ -9,6 +9,9 @@ using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
 using FishNet.Object.Synchronizing;
 using System.Threading.Tasks;
+using FishNet.Connection;
+using FishNet.Managing.Server;
+using FishNet.Managing.Client;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -38,6 +41,8 @@ public class MainMenuUI : MonoBehaviour
     private LocalConnectionState clientState = LocalConnectionState.Stopped;
     private LocalConnectionState serverState = LocalConnectionState.Stopped;
 
+    List<string> playerNames = new List<string>();
+
     /////////////////////////////////////////////////////////////////////////////////////
     //
     //                                  FUNCTIONS
@@ -62,6 +67,37 @@ public class MainMenuUI : MonoBehaviour
 
         networkManager.ServerManager.OnServerConnectionState += ServerManager_OnServerConnectionState;
         networkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
+
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += AddPlayerServer;
+        InstanceFinder.NetworkManager.ClientManager.OnRemoteConnectionState += AddPlayerClient;
+    }
+
+    // doesnt work replace !!!!!!!!!!!!
+    void AddPlayerClient(RemoteConnectionStateArgs args)
+    {
+        if (InstanceFinder.IsHost || InstanceFinder.IsServer)
+            return;
+
+        if (args.ConnectionState == RemoteConnectionState.Started)
+        {
+            ClientManager clientManager = InstanceFinder.NetworkManager.ClientManager;
+
+            foreach (int clientId in clientManager.Clients.Keys)
+            {
+                playerNames.Add("Player " + clientId.ToString());
+                UpdatePlayerListTxt();
+            }
+        }
+    }
+
+    void AddPlayerServer(NetworkConnection connection, RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Started)
+        {
+            playerNames.Add("Player " + connection.ClientId.ToString());
+            UpdatePlayerListTxt();
+        }
+        // method body
     }
 
     private void OnDestroy()
@@ -107,20 +143,30 @@ public class MainMenuUI : MonoBehaviour
         ConnectInfoMenu.SetActive(false);
         LobbyInfoMenu.SetActive(true);
 
-        Debug.Log("IsHost: " + InstanceFinder.IsServer);
+        //Debug.Log("IsHost: " + InstanceFinder.IsServer);
         if (InstanceFinder.IsServer)
         {
             startBtn.SetActive(true);
         }
     }
-    
+
     /////////////////////////////////////////////////////////////////////////////////////
     // LOBBY INFO FUNCTIONS
     /////////////////////////////////////////////////////////////////////////////////////
 
+    public void UpdatePlayerListTxt()
+    {
+        playerListTxt.text = "";
+        foreach (string player in playerNames)
+        {
+            playerListTxt.text += player + "\n";
+        }
+    }
+
     public void UpdatePlayerListTxt(List<string> playerList)
     {
         playerListTxt.text = "";
+        Debug.Log(playerList.Count);
         foreach (string player in playerList)
         {
             playerListTxt.text += player + "\n";
@@ -143,7 +189,7 @@ public class MainMenuUI : MonoBehaviour
         }
         networkManager.ServerManager.StartConnection();
         await Task.Delay(500); // Wait to avoid race condition
-        
+
         StartClient();
     }
 
@@ -175,6 +221,7 @@ public class MainMenuUI : MonoBehaviour
 
         if (clientState == LocalConnectionState.Stopped)
         {
+            ChangeIpOnTugboat(IPInputField.text);
             networkManager.ClientManager.StartConnection();
             SwitchToLobby();
         }
@@ -200,6 +247,11 @@ public class MainMenuUI : MonoBehaviour
             Debug.LogWarning("Client is not started.");
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //
+    /////////////////////////////////////////////////////////////////////////////////////
+
 
     /////////////////////////////////////////////////////////////////////////////////////
     // EVENTS

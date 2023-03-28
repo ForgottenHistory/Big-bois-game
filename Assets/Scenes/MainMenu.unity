@@ -159,7 +159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.8722605}
   m_AnchorMax: {x: 0.4581248, y: 1}
-  m_AnchoredPosition: {x: 23.01001, y: -17.894043}
+  m_AnchoredPosition: {x: 23.009949, y: -17.894043}
   m_SizeDelta: {x: -44.02002, y: -35.694}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4327235
@@ -213,8 +213,8 @@ MonoBehaviour:
   m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 42.83707
+  m_fontSizeMin: 10
+  m_fontSizeMax: 41.008656
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -920,8 +920,8 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1121,7 +1121,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 151266574}
   m_TextViewport: {fileID: 1523293776}
   m_TextComponent: {fileID: 1622787737}
@@ -1229,6 +1229,7 @@ GameObject:
   - component: {fileID: 206633921}
   - component: {fileID: 206633920}
   - component: {fileID: 206633922}
+  - component: {fileID: 206633923}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1287,6 +1288,25 @@ MonoBehaviour:
   _updateHostVisibility: 1
   _defaultConditions:
   - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
+--- !u!114 &206633923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206633918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f48f002b825cbd45a19bd96d90f9edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unreliableMTU: 1023
+  _ipv4BindAddress: 
+  _ipv6BindAddress: 
+  _port: 10000
+  _maximumClients: 8
+  _clientAddress: localhost
+  _timeout: 15
 --- !u!1 &245042128
 GameObject:
   m_ObjectHideFlags: 0
@@ -1372,7 +1392,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1619910241}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: SwitchScene
         m_Mode: 5
@@ -1998,8 +2018,8 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2217,8 +2237,8 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2416,12 +2436,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 39.00428
+  m_fontSize: 37.339462
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2763,12 +2783,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42.83707
+  m_fontSize: 41.008656
   m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 42.83707
+  m_fontSizeMin: 10
+  m_fontSizeMax: 41.008656
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -3520,12 +3540,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 39.00428
+  m_fontSize: 37.339462
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4603,6 +4623,8 @@ GameObject:
   - component: {fileID: 1619910240}
   - component: {fileID: 1619910239}
   - component: {fileID: 1619910238}
+  - component: {fileID: 1619910241}
+  - component: {fileID: 1619910242}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -4627,6 +4649,8 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 1619910239}
+  - {fileID: 1619910241}
+  - {fileID: 1619910242}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -4671,6 +4695,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1619910241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619910237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90eee7ac2f4256d44b9994bfa1c6d217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 1619910238}
+  _networkObjectCache: {fileID: 1619910238}
+  mainMenuUI: {fileID: 1601426351}
+--- !u!114 &1619910242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619910237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b0c1da507867a44d869ba7a1efc291b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 1619910238}
+  _networkObjectCache: {fileID: 1619910238}
 --- !u!1 &1622787735
 GameObject:
   m_ObjectHideFlags: 0
@@ -5638,12 +5693,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 39.00428
+  m_fontSize: 37.339462
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -6014,8 +6069,8 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10.145621
-  m_fontSizeMax: 39.00428
+  m_fontSizeMin: 10
+  m_fontSizeMax: 37.339462
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

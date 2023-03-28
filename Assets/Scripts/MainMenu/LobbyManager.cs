@@ -55,52 +55,14 @@ public class LobbyManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        //Debug.Log("Server started");
     }
-
-    /////////////////////////////////////////////////////////////////////////////////////
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        //Debug.Log("Client started");
-
+        Debug.Log("Client started");
         mainMenuUI.SwitchToLobby();
-        ServerAddPlayer(LocalConnection.ClientId, mainMenuUI.PlayerNameInputField.text);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public void ChangeIpOnTugboat(string ip)
-    {
-        Tugboat tugboatTransport = InstanceFinder.NetworkManager.GetComponent<Tugboat>();
-        tugboatTransport.SetClientAddress(ip);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public void JoinLobby(string ip = "localhost")
-    {
-        ChangeIpOnTugboat(ip);
-        InstanceFinder.ClientManager.StartConnection(ip);
-    }
-    
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    public async void CreateServer()
-    {
-        ChangeIpOnTugboat("localhost");
-        bool result = InstanceFinder.ServerManager.StartConnection();
-        Debug.Log("Server started: " + result);
-
-        if (result == false)
-        {
-            Debug.LogError("Server failed to start.");
-            return;
-        }
-
-        await Task.Delay(500); // Wait to avoid race condition
-        InstanceFinder.ClientManager.StartConnection("localhost");
+        //Debug.Log(mainMenuUI.PlayerNameInputField.text);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -114,6 +76,7 @@ public class LobbyManager : NetworkBehaviour
         PlayerContainer pc = new PlayerContainer();
         pc.PlayerName = playerName;
         playerContainers.Add(id, pc);
+        Debug.Log("Added player to dictionary" + " ID: " + id + " Name: " + playerName);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -122,12 +85,6 @@ public class LobbyManager : NetworkBehaviour
     [ObserversRpc]
     void UpdatePlayerListTxtRpc()
     {
-        if (InstanceFinder.ServerManager.isActiveAndEnabled == false)
-        {
-            Debug.LogWarning("Server is not active. Cannot update the player list.");
-            return;
-        }
-
         mainMenuUI.UpdatePlayerListTxt(playerContainers.Values.Select(pc => pc.PlayerName).ToList());
     }
 
@@ -186,33 +143,11 @@ public class LobbyManager : NetworkBehaviour
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-        // This is called when object is deinitialized
-        // It needs to be called when a disconnect happens
-        //ServerRemovePlayer(LocalConnection.ClientId);
-        //mainMenuUI.DisconnectFromLobby();
-        //playerContainers.Clear();
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
     [ServerRpc(RequireOwnership = false)]
     public void ServerRemovePlayer(int id)
     {
         playerContainers.Remove(id);
         //UpdatePlayerListTxtRpc();
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    // DEBUG
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    [ServerRpc(RequireOwnership = false)]
-    private void RpcSendChat(string msg, NetworkConnection conn = null)
-    {
-        Debug.Log($"Received {msg} on the server from connection {conn.ClientId}.");
     }
 
     /////////////////////////////////////////////////////////////////////////////////////

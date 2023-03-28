@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet;
 using FishNet.Object;
+using FishNet.Connection;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : NetworkBehaviour, IInitialize
@@ -21,22 +22,32 @@ public class PlayerController : NetworkBehaviour, IInitialize
     private CharacterController characterController;
     private Vector3 velocity = Vector3.zero;
 
+    public int owner = 0;
+
     public bool isActive { get; set; } = false;
+
     /////////////////////////////////////////////////////////////////////////////////////
     // START
     /////////////////////////////////////////////////////////////////////////////////////
 
-    [ObserversRpc]
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Debug.Log("IsOwner: " + IsOwner + " IsServer: " + NetworkManager.IsServer + " ClientId" + LocalConnection.ClientId);
+        if( IsOwner == true )
+            Initialize();
+        else
+            Deinitialize();
+    }
+
     public void Initialize()
-    {  
-        if (IsOwner != true)
+    {   
+        if (IsOwner == false)
         {
             Debug.Log("Deinitialize");
-            Deinitialize();
             return;
         }
-        Debug.Log("IsOwner: " + IsOwner );
-        Debug.Log( "ClientId" + LocalConnection.ClientId);
+
         characterController = GetComponent<CharacterController>();
         GameObject cameraObj = transform.GetChild(0).gameObject;
         cameraObj.GetComponent<CameraController>().Initialize();
@@ -64,13 +75,10 @@ public class PlayerController : NetworkBehaviour, IInitialize
 
     void Update()
     {   
-        if( isActive == false )
+        if( isActive == false || IsOwner == false )
             return;
 
-        if (IsOwner)
-        {
-            Movement();
-        }
+        Movement();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
