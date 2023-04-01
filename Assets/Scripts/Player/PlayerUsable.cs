@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerUsable : MonoBehaviour, IInitialize
 {
@@ -13,7 +14,8 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     ////////////////////////////////////////////////////////////////
 
     Usable usable = null;
-    GameObject useText = null;
+    GameObject useTextObj = null;
+    TextMeshProUGUI useText = null;
 
     public bool isActive { get; set; } = false;
 
@@ -21,13 +23,15 @@ public class PlayerUsable : MonoBehaviour, IInitialize
 
     public void Initialize()
     {
-        useText = GameObject.Find("UseText");
-        if (useText == null)
+        useTextObj = GameObject.Find("UseText");
+        if (useTextObj == null)
         {
             Debug.LogError("No use text found!");
             return;
         }
-        useText.SetActive(false);
+        useText = useTextObj.GetComponent<TextMeshProUGUI>();
+        useTextObj.SetActive(false);
+
         isActive = true;
     }
 
@@ -44,7 +48,7 @@ public class PlayerUsable : MonoBehaviour, IInitialize
         if (isActive == false)
             return;
 
-        if (usable != null && useText != null)
+        if (usable != null && useTextObj != null)
         {
             bool isHold = usable.hold;
             bool eKeyPressed = isHold ? Input.GetKey(KeyCode.E) : Input.GetKeyDown(KeyCode.E);
@@ -54,11 +58,28 @@ public class PlayerUsable : MonoBehaviour, IInitialize
                 usable.Use();
             }
 
-            useText.SetActive(true);
+            if (usable is CustomerUsable)
+            {
+                CustomerUsable customerUsable = (CustomerUsable)usable;
+                if (customerUsable.hasTakenOrder == false)
+                {
+                    useText.text = "Press [E] to take order";
+                }
+                else
+                {
+                    useText.text = "You already took this order!";
+                }
+            }
+            else
+            {
+                useText.text = "Press [E] to use";
+            }
+
+            useTextObj.SetActive(true);
         }
-        else if (useText != null)
+        else if (useTextObj != null)
         {
-            useText.SetActive(false);
+            useTextObj.SetActive(false);
         }
     }
 
@@ -69,10 +90,11 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     ////////////////////////////////////////////////////////////////
 
     private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Usable>() != null)
+    {   
+        Usable otherUsable = other.GetComponent<Usable>();
+        if (otherUsable != null)
         {
-            if (usable != null)
+            if (usable != null && otherUsable.isActiveAndEnabled == true)
             {
                 //is closer than current usable?
                 if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usable.transform.position, transform.position))

@@ -223,8 +223,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 1, z: 1.0370919}
-  m_Center: {x: 0, y: 0, z: 0.6009142}
+  m_Size: {x: 0.5, y: 1, z: 1.2803792}
+  m_Center: {x: 0, y: 0, z: 0.72255784}
 --- !u!114 &6574865808282885395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,6 +407,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: -7790775571453469910}
   _networkObjectCache: {fileID: -7790775571453469910}
   speed: 5
+  owner: 0
 --- !u!114 &-7790775571453469910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +425,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 5267381972848793540}
+  - {fileID: -6530052671492079580}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -467,9 +469,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -7790775571453469910}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: -7790775571453469910}
   _synchronizeParent: 0
   _packing:
     Position: 1

@@ -11,6 +11,10 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
     NavMeshAgent agent;
     Seat seat;
 
+    public CustomerUsable customerUsable = null;
+
+    public Order order { get; set; } = null;
+
     bool seated = false;
 
     public bool isActive { get; set; } = true;
@@ -18,6 +22,7 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
     public void Initialize()
     {
         agent = GetComponent<NavMeshAgent>();
+        customerUsable.customerSpawn = this;
         isActive = true;
     }
 
@@ -28,13 +33,14 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
 
     void Update()
     {
-        if (isActive == false )
-            return; 
-        
+        if (isActive == false)
+            return;
+
         CheckForSeated();
     }
 
-    void CheckForSeated() {
+    void CheckForSeated()
+    {
         if (seat != null && seated == false)
         {
             float distance = Vector3.Distance(transform.position, seat.GetPosition);
@@ -57,5 +63,9 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
         agent.enabled = false;
         transform.position = seat.GetPosition;
         transform.rotation = seat.GetRotation;
+
+        List<Food> foods = new List<Food>();
+        foods.Add( new Food("Hot dog", 5.0f) );
+        order = new Order(seat.id, foods);
     }
 }

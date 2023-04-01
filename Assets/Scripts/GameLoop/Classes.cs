@@ -1,3 +1,7 @@
+
+using System.Collections.Generic;
+using UnityEngine;
+
 public class Food {
 
     public Food (string name, float price) {
@@ -15,17 +19,18 @@ public class Order {
         this.customerID = customerID;
         this.foods = foods;
     }
-    List<Food> foods = new List<Food>();
-    int customerID;
+    public List<Food> foods = new List<Food>();
+    public int customerID;
 }
 
 public class Seat
 {
-    public Seat(GameObject seatObject)
+    public Seat(GameObject seatObject, int id)
     {
         this.seatObject = seatObject;
         position = seatObject.transform.position;
         rotation = seatObject.transform.rotation;
+        this.id = id;
     }
 
     public Vector3 GetPosition { get { return position; } }
@@ -33,6 +38,8 @@ public class Seat
 
     public bool isOccupied { get; set; } = false;
     public GameObject seatObject { get; set; }
+
+    public int id { get; set; }
 
     Vector3 position;
     Quaternion rotation;

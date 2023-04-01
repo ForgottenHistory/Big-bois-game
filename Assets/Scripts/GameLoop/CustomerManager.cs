@@ -30,9 +30,11 @@ public class CustomerManager : NetworkBehaviour, IInitialize
     {
         if (seatPointsParent != null)
         {
+            int index = 1;
             foreach (Transform t in seatPointsParent)
             {
-                seats.Add(new Seat(t.gameObject));
+                seats.Add(new Seat(t.gameObject, index));
+                index++;
             }
         }
         else
