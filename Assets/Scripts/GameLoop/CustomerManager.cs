@@ -7,25 +7,6 @@ using FishNet.Managing.Server;
 using UnityEngine.AI;
 using System.Linq;
 
-public class Seat
-{
-    public Seat(GameObject seatObject)
-    {
-        this.seatObject = seatObject;
-        position = seatObject.transform.position;
-        rotation = seatObject.transform.rotation;
-    }
-
-    public Vector3 GetPosition { get { return position; } }
-    public Quaternion GetRotation { get { return rotation; } }
-
-    public bool isOccupied { get; set; } = false;
-    public GameObject seatObject { get; set; }
-
-    Vector3 position;
-    Quaternion rotation;
-}
-
 public class CustomerManager : NetworkBehaviour, IInitialize
 {
     public NetworkObject customer;
