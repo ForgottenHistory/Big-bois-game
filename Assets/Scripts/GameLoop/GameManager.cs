@@ -26,7 +26,7 @@ public class GameManager : NetworkBehaviour, IInitialize
     /////////////////////////////////////////////////////////////////////////////////////
     // PRIVATE VARIABLES 
     /////////////////////////////////////////////////////////////////////////////////////
-    
+
     int nextSpawnIndex = 0;
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +35,13 @@ public class GameManager : NetworkBehaviour, IInitialize
     List<PlayerController> players = new List<PlayerController>();
 
     ServerManager serverManager;
+    CustomerManager customerManager;
+
+    public float customerSpawnRate = 1f;
+
+    float timeOfDay = 0f;
+    int day = 1;
+    float nextSpawnTime = 25f;
 
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +72,10 @@ public class GameManager : NetworkBehaviour, IInitialize
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
+
+        customerManager = GetComponent<CustomerManager>();
+        customerManager.Initialize();
+        customerManager.isActive = true;
 
         StartGameClientRPC();
     }
@@ -102,6 +113,63 @@ public class GameManager : NetworkBehaviour, IInitialize
         Instance = this;
     }
 
+    [Server]
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SpawnCustomer();
+        }
+
+        timeOfDay += Time.deltaTime;
+        UpdateSpawnrateWithTime();
+    }
+
+    void UpdateSpawnrateWithTime()
+    {
+        float spawnRate = customerSpawnRate;
+        if (timeOfDay > 6 * 60 && timeOfDay <= 7 * 60) // 6 am to 7 am
+        {
+            spawnRate = customerSpawnRate * 1.2f;
+        }
+        else if (timeOfDay > 7 * 60 && timeOfDay <= 9 * 60) // 7 am to 9 am
+        {
+            spawnRate = customerSpawnRate * 1.2f;
+        }
+        else if (timeOfDay > 9 * 60 && timeOfDay <= 11 * 60) // 9 am to 11 am
+        {
+            spawnRate = customerSpawnRate;
+        }
+        else if (timeOfDay > 11 * 60 && timeOfDay <= 13 * 60) // 11 am to 1 pm
+        {
+            spawnRate = customerSpawnRate * 1.5f;
+        }
+        else if (timeOfDay > 13 * 60 && timeOfDay <= 17 * 60) // 1 pm to 5 pm
+        {
+            spawnRate = customerSpawnRate * 1.2f;
+        }
+        else if (timeOfDay > 17 * 60 && timeOfDay <= 21 * 60) // 5 pm to 9 pm
+        {
+            spawnRate = customerSpawnRate * 1.4f;
+        }
+        else if (timeOfDay > 21 * 60 && timeOfDay <= 24 * 60) // 9 pm to midnight
+        {
+            spawnRate = customerSpawnRate * 1.1f;
+        }
+
+        // Spawn customers at the appropriate rate
+        if (Time.time >= nextSpawnTime)
+        {
+            SpawnCustomer();
+            nextSpawnTime = Time.time + 1f / spawnRate;
+        }
+    }
+
+    void SpawnCustomer()
+    {
+        customerManager.SpawnCustomer();
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////
 
     [Server]
@@ -112,12 +180,12 @@ public class GameManager : NetworkBehaviour, IInitialize
 
         //GameObject p = GameObject.Instantiate(player, spawnPoints[nextSpawnIndex], Quaternion.identity);
         //serverManager.Spawn(p, conn);
-        
+
         p.GetComponent<PlayerController>().Initialize();
         players.Add(p.GetComponent<PlayerController>());
 
         nextSpawnIndex++;
-        if(nextSpawnIndex >= spawnPoints.Count)
+        if (nextSpawnIndex >= spawnPoints.Count)
         {
             nextSpawnIndex = 0;
         }
