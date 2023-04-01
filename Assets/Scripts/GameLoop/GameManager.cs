@@ -21,6 +21,8 @@ public class GameManager : NetworkBehaviour, IInitialize
 
     public Transform spawnPointsParent;
 
+    public TimeOfDayClock timeOfDayClock;
+
     public bool isActive { get; set; } = true;
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +39,15 @@ public class GameManager : NetworkBehaviour, IInitialize
     ServerManager serverManager;
     CustomerManager customerManager;
 
+    public float timeOfDaySpeed = 1f;
     public float customerSpawnRate = 1f;
+    public float nextSpawnTime = 25f;
+
+    public float GetTimeOfDay { get { return timeOfDay; } }
 
     float timeOfDay = 0f;
     int day = 1;
-    float nextSpawnTime = 25f;
+    float spawnTime = 25.0f;
 
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,6 +82,9 @@ public class GameManager : NetworkBehaviour, IInitialize
         customerManager = GetComponent<CustomerManager>();
         customerManager.Initialize();
         customerManager.isActive = true;
+        
+        spawnTime = nextSpawnTime;
+        timeOfDayClock.Initialize();
 
         StartGameClientRPC();
     }
@@ -121,7 +130,7 @@ public class GameManager : NetworkBehaviour, IInitialize
             SpawnCustomer();
         }
 
-        timeOfDay += Time.deltaTime;
+        timeOfDay += Time.deltaTime * timeOfDaySpeed;
         UpdateSpawnrateWithTime();
     }
 
@@ -158,10 +167,10 @@ public class GameManager : NetworkBehaviour, IInitialize
         }
 
         // Spawn customers at the appropriate rate
-        if (Time.time >= nextSpawnTime)
+        if (Time.time >= spawnTime)
         {
             SpawnCustomer();
-            nextSpawnTime = Time.time + 1f / spawnRate;
+            spawnTime = Time.time + nextSpawnTime / spawnRate;
         }
     }
 
