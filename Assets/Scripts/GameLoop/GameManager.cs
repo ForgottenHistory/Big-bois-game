@@ -17,20 +17,20 @@ public class GameManager : NetworkBehaviour, IInitialize
 
     public NetworkObject player;
 
-    float startupTime = 2f;
-
     public Transform spawnPointsParent;
 
     public TimeOfDayClock timeOfDayClock;
 
     public bool isActive { get; set; } = true;
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    // PRIVATE VARIABLES 
-    /////////////////////////////////////////////////////////////////////////////////////
+    public float timeOfDaySpeed = 1f;
+    public float customerSpawnRate = 1f;
+    public float nextSpawnTime = 25f;
 
-    int nextSpawnIndex = 0;
-
+    public float GetTimeOfDay { get { return timeOfDay; } }
+    
+    /////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE VARIABLES
     /////////////////////////////////////////////////////////////////////////////////////
 
     List<Vector3> spawnPoints = new List<Vector3>();
@@ -39,18 +39,18 @@ public class GameManager : NetworkBehaviour, IInitialize
     ServerManager serverManager;
     CustomerManager customerManager;
 
-    public float timeOfDaySpeed = 1f;
-    public float customerSpawnRate = 1f;
-    public float nextSpawnTime = 25f;
-
-    public float GetTimeOfDay { get { return timeOfDay; } }
-
     float timeOfDay = 0f;
-    int day = 1;
     float spawnTime = 25.0f;
+    float startupTime = 2f;
+
+    int nextSpawnIndex = 0;
+    int day = 1;
 
     /////////////////////////////////////////////////////////////////////////////////////
-
+    //
+    //                                  INIT & DEINIT
+    //
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void Initialize()
     {
@@ -90,11 +90,21 @@ public class GameManager : NetworkBehaviour, IInitialize
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
+    // START SERVER / CLIENT
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    public void Deinitialize()
+    public override void OnStartServer()
     {
-        isActive = false;
+        base.OnStartServer();
+        StartCoroutine(InitializeCoroutine());
     }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Instance = this;
+    }
+
 
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -105,22 +115,17 @@ public class GameManager : NetworkBehaviour, IInitialize
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
+    // DEINITIALIZE
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    public override void OnStartServer()
+    public void Deinitialize()
     {
-        base.OnStartServer();
-        StartCoroutine(InitializeCoroutine());
+        isActive = false;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
-    // 
+    // UPDATE
     /////////////////////////////////////////////////////////////////////////////////////
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        Instance = this;
-    }
 
     [Server]
     void Update()
@@ -133,6 +138,10 @@ public class GameManager : NetworkBehaviour, IInitialize
         timeOfDay += Time.deltaTime * timeOfDaySpeed;
         UpdateSpawnrateWithTime();
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // CUSTOMER SPAWNING
+    /////////////////////////////////////////////////////////////////////////////////////
 
     void UpdateSpawnrateWithTime()
     {
@@ -174,11 +183,15 @@ public class GameManager : NetworkBehaviour, IInitialize
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+
     void SpawnCustomer()
     {
         customerManager.SpawnCustomer();
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    // PLAYER SPAWNING
     /////////////////////////////////////////////////////////////////////////////////////
 
     [Server]

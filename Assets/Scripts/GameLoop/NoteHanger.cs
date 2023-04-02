@@ -5,8 +5,15 @@ using FishNet.Object;
 
 public class NoteHanger : NetworkBehaviour
 {
+    ////////////////////////////////////////////////////////////////
+    // Summary:
+    // This class is used to hold notes for players to pick up
+    ////////////////////////////////////////////////////////////////
+
     public List<GameObject> noteObjList { get; set; } = new List<GameObject>();
     UIManager uiManager;
+
+    ////////////////////////////////////////////////////////////////
 
     void Start()
     {
@@ -18,6 +25,8 @@ public class NoteHanger : NetworkBehaviour
 
         uiManager = UIManager.Instance;
     }
+
+    ////////////////////////////////////////////////////////////////
 
     public void TakeOrder(Order order)
     {
@@ -31,4 +40,6 @@ public class NoteHanger : NetworkBehaviour
             }
         }
     }
+
+    ////////////////////////////////////////////////////////////////
 }

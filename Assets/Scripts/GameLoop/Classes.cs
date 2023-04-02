@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/////////////////////////////////////////////////////////////////////////////////////
+
 public class Food {
 
     public Food (string name, float price) {
@@ -13,6 +15,8 @@ public class Food {
     public float price;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+
 public class Order {
 
     public Order (int customerID, List<Food> foods) {
@@ -22,6 +26,8 @@ public class Order {
     public List<Food> foods = new List<Food>();
     public int customerID;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
 
 public class Seat
 {
@@ -44,3 +50,5 @@ public class Seat
     Vector3 position;
     Quaternion rotation;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////

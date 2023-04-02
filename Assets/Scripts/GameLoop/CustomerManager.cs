@@ -9,6 +9,10 @@ using System.Linq;
 
 public class CustomerManager : NetworkBehaviour, IInitialize
 {
+    ////////////////////////////////////////////////////////////////
+    // PUBLIC VARIABLESA
+    ////////////////////////////////////////////////////////////////
+    
     public NetworkObject customer;
 
     public Transform spawnPointsParent;
@@ -17,6 +21,8 @@ public class CustomerManager : NetworkBehaviour, IInitialize
     public bool isActive { get; set; } = true;
 
     /////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE VARIABLES
+    ////////////////////////////////////////////////////////////////
 
     List<CustomerSpawn> customers = new List<CustomerSpawn>();
     List<Seat> seats = new List<Seat>();
@@ -24,6 +30,8 @@ public class CustomerManager : NetworkBehaviour, IInitialize
     ServerManager serverManager;
     Vector3 spawnPoint = Vector3.zero;
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    // INIT & DEINIT
     /////////////////////////////////////////////////////////////////////////////////////
 
     public void Initialize()
@@ -52,6 +60,8 @@ public class CustomerManager : NetworkBehaviour, IInitialize
     {
         isActive = false;
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void SpawnCustomer()
     {
@@ -88,8 +98,12 @@ public class CustomerManager : NetworkBehaviour, IInitialize
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+
     public void RemoveCustomer(CustomerSpawn cs)
     {
         customers.Remove(cs);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 }

@@ -9,8 +9,13 @@ using UnityEngine.AI;
 
 public class CustomerSpawn : NetworkBehaviour, IInitialize
 {
+
+    ////////////////////////////////////////////////////////////////
+
     NavMeshAgent agent;
     Seat seat;
+
+    ////////////////////////////////////////////////////////////////
 
     public CustomerUsable customerUsable = null;
 
@@ -20,6 +25,10 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
 
     public bool isActive { get; set; } = true;
 
+    ////////////////////////////////////////////////////////////////
+    // INIT & DEINIT
+    ////////////////////////////////////////////////////////////////
+
     public void Initialize()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -28,10 +37,16 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
         isActive = true;
     }
 
+    ////////////////////////////////////////////////////////////////
+
     public void Deinitialize()
     {
         isActive = false;
     }
+
+    ////////////////////////////////////////////////////////////////
+    // UPDATE
+    ////////////////////////////////////////////////////////////////
 
     void Update()
     {
@@ -40,6 +55,10 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
 
         CheckForSeated();
     }
+
+    ////////////////////////////////////////////////////////////////
+    // SEATING
+    ////////////////////////////////////////////////////////////////
 
     void CheckForSeated()
     {
@@ -54,11 +73,15 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+
     public void SetDestination(Seat seat)
     {
         this.seat = seat;
         agent.SetDestination(seat.GetPosition);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     public void TeleportToSeat()
     {

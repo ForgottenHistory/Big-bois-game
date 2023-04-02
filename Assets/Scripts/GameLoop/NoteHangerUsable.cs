@@ -5,9 +5,13 @@ using FishNet.Object;
 
 public class NoteHangerUsable : NetworkBehaviour, IUsable
 {
+    ////////////////////////////////////////////////////////////////
+
     public NoteHanger noteHanger = null;
 
     public bool hold { get; set; } = false;
+
+    ////////////////////////////////////////////////////////////////
 
     public void Use()
     {
@@ -26,4 +30,6 @@ public class NoteHangerUsable : NetworkBehaviour, IUsable
         noteHanger.TakeOrder( order );
         UIManager.Instance.RemoveOrder( order );
     }
+
+    ////////////////////////////////////////////////////////////////
 }

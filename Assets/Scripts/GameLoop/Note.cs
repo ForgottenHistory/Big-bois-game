@@ -5,15 +5,21 @@ using FishNet.Object;
 
 public class Note : NetworkBehaviour, IUsable
 {
+    ////////////////////////////////////////////////////////////////
+
     Order order;
 
     public bool hold { get; set; } = false;
+
+    ////////////////////////////////////////////////////////////////
 
     public void SetOrder(Order order)
     {
         this.order = order;
         UIManager.Instance.RemoveOrder(order);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     public void RemoveOrder()
     {
@@ -22,8 +28,12 @@ public class Note : NetworkBehaviour, IUsable
         gameObject.SetActive(false);
     }
 
+    ////////////////////////////////////////////////////////////////
+
     public void Use()
     {
         RemoveOrder();
     }
+
+    ////////////////////////////////////////////////////////////////
 }
