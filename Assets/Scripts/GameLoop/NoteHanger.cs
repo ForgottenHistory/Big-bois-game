@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FishNet.Object;
 
-public class NoteHanger : MonoBehaviour
+public class NoteHanger : NetworkBehaviour
 {
-    List<GameObject> noteObjList = new List<GameObject>();
-    List<Order> orderList = new List<Order>();
-
+    public List<GameObject> noteObjList { get; set; } = new List<GameObject>();
     UIManager uiManager;
 
     void Start()

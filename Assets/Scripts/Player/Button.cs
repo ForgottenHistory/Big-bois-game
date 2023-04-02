@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Button : Usable
+public class Button : MonoBehaviour, IUsable
 {
     //customizable button
 
     public UnityEvent invokeMethod; //method set in editor
 
-    public Button(bool hold) : base(hold)
-    {
+    public bool hold { get; } = false;
 
-    }
-
-    public override void Use()
+    public void Use()
     {
         invokeMethod.Invoke();
     }

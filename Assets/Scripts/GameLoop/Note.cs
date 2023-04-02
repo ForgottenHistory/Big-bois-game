@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FishNet.Object;
 
-public class Note : Usable
+public class Note : NetworkBehaviour, IUsable
 {
     Order order;
 
-    public Note(bool hold) : base(hold)
-    {
-    }
+    public bool hold { get; set; } = false;
 
     public void SetOrder(Order order)
     {
@@ -23,7 +22,7 @@ public class Note : Usable
         gameObject.SetActive(false);
     }
 
-    public override void Use()
+    public void Use()
     {
         RemoveOrder();
     }

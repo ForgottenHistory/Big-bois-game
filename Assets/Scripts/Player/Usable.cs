@@ -2,14 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Usable : MonoBehaviour
+public interface IUsable
 {
-    //usable base script
-
-    public bool hold;
-    public Usable(bool hold)
-    {
-        this.hold = hold;
-    }
-    public abstract void Use();
+    bool hold { get; }
+    void Use();
 }

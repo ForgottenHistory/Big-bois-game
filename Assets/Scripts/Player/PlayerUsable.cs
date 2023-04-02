@@ -13,7 +13,7 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     //
     ////////////////////////////////////////////////////////////////
 
-    Usable usable = null;
+    IUsable usable = null;
     GameObject useTextObj = null;
     TextMeshProUGUI useText = null;
 
@@ -90,45 +90,80 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     ////////////////////////////////////////////////////////////////
 
     private void OnTriggerEnter(Collider other)
-    {   
-        Usable otherUsable = other.GetComponent<Usable>();
+    {
+        MonoBehaviour[] components = other.GetComponents<MonoBehaviour>();
+        IUsable otherUsable = null;
+
+        foreach (MonoBehaviour component in components)
+        {
+            Debug.Log(typeof(IUsable) + " Is enabled " + component.enabled);
+            if (component is IUsable && component.enabled)
+            {
+                otherUsable = (IUsable)component;
+                Debug.Log("found usable");
+                break;
+            }
+        }
+
         if (otherUsable != null)
         {
-            if (usable != null && otherUsable.isActiveAndEnabled == true)
+            if (usable != null)
             {
-                //is closer than current usable?
-                if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usable.transform.position, transform.position))
+                MonoBehaviour usableMonoBehaviour = (MonoBehaviour)usable;
+                MonoBehaviour otherUsableMonoBehaviour = (MonoBehaviour)otherUsable;
+
+                if (otherUsableMonoBehaviour.isActiveAndEnabled)
                 {
-                    usable = other.GetComponent<Usable>();
+                    //is closer than current usable?
+                    if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usableMonoBehaviour.transform.position, transform.position))
+                    {
+                        usable = otherUsable;
+                    }
                 }
             }
             else
             {
-                usable = other.GetComponent<Usable>();
+                usable = otherUsable;
             }
         }
     }
 
     ////////////////////////////////////////////////////////////////
 
-    private void OnTriggerStay(Collider other)
+private void OnTriggerStay(Collider other)
+{
+    MonoBehaviour[] components = other.GetComponents<MonoBehaviour>();
+    IUsable otherUsable = null;
+
+    foreach (MonoBehaviour component in components)
     {
-        if (other.GetComponent<Usable>() != null)
+        if (component is IUsable && component.enabled)
         {
-            if (usable != null)
-            {
-                //compare usables in area
-                if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usable.transform.position, transform.position))
-                {
-                    usable = other.gameObject.GetComponent<Usable>();
-                }
-            }
-            else
-            {
-                usable = other.GetComponent<Usable>();
-            }
+            otherUsable = (IUsable)component;
+            break;
         }
     }
+
+    if (otherUsable != null)
+    {
+        if (usable != null)
+        {
+            MonoBehaviour usableMonoBehaviour = (MonoBehaviour)usable;
+            MonoBehaviour otherUsableMonoBehaviour = (MonoBehaviour)otherUsable;
+
+            //compare usables in area
+            if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usableMonoBehaviour.transform.position, transform.position))
+            {
+                usable = otherUsable;
+            }
+        }
+        else
+        {
+            usable = otherUsable;
+        }
+    }
+}
+
 
     ////////////////////////////////////////////////////////////////
 

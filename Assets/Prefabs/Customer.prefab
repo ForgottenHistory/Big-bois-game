@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3152589451610979820}
   - component: {fileID: 3152589451610979819}
   - component: {fileID: 3152589451610979818}
-  - component: {fileID: 3152589451610979817}
   - component: {fileID: 3152589451610979823}
   - component: {fileID: 3152589451610979822}
   - component: {fileID: 3152589451610979821}
@@ -92,19 +91,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3152589451610979817
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3152589451610979816}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3152589451610979823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,6 +125,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 3152589451610979823}
   - {fileID: 3152589451610979821}
+  - {fileID: 5913156349881195602}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -148,7 +135,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 8
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 3413041281
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 14880657850213010695
   _sceneNetworkObjects:
@@ -229,7 +216,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54282a1279bbc194084c99200321072e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hold: 0
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 3152589451610979822}
+  _networkObjectCache: {fileID: 3152589451610979822}
 --- !u!54 &-4736388044019499757
 Rigidbody:
   m_ObjectHideFlags: 0

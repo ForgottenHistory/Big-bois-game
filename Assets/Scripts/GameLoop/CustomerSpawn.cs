@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet;
 using FishNet.Object;
+using FishNet.Serializing;
 using FishNet.Managing.Server;
 using UnityEngine.AI;
 
@@ -23,6 +24,7 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
     {
         agent = GetComponent<NavMeshAgent>();
         customerUsable.customerSpawn = this;
+        customerUsable.enabled = false;
         isActive = true;
     }
 
@@ -60,6 +62,7 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
 
     public void TeleportToSeat()
     {
+        customerUsable.enabled = true;
         agent.enabled = false;
         transform.position = seat.GetPosition;
         transform.rotation = seat.GetRotation;
