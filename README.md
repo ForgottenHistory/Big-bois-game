@@ -1,2 +1,2 @@
-# Big-bois-game
-A restaurant game
+# Restaurant game
+A restaurant game developed with a couple friends
