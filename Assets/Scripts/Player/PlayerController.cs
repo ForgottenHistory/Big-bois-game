@@ -33,7 +33,7 @@ public class PlayerController : NetworkBehaviour, IInitialize
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Debug.Log("IsOwner: " + IsOwner + " IsServer: " + NetworkManager.IsServer + " ClientId" + LocalConnection.ClientId);
+        //Debug.Log("IsOwner: " + IsOwner + " IsServer: " + NetworkManager.IsServer + " ClientId" + LocalConnection.ClientId);
         if( IsOwner == true )
             Initialize();
         else

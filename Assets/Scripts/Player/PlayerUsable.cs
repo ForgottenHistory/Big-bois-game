@@ -96,11 +96,9 @@ public class PlayerUsable : MonoBehaviour, IInitialize
 
         foreach (MonoBehaviour component in components)
         {
-            Debug.Log(typeof(IUsable) + " Is enabled " + component.enabled);
             if (component is IUsable && component.enabled)
             {
                 otherUsable = (IUsable)component;
-                Debug.Log("found usable");
                 break;
             }
         }
