@@ -21,18 +21,52 @@ public class Note : NetworkBehaviour, IUsable
 
     ////////////////////////////////////////////////////////////////
 
+    /*
     public void RemoveOrder()
     {
         UIManager.Instance.TakeOrder(order);
         order = null;
         gameObject.SetActive(false);
     }
+    */
 
     ////////////////////////////////////////////////////////////////
 
     public void Use()
     {
         RemoveOrder();
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    public void RemoveOrder()
+    {
+        if (IsServer)
+        {
+            RpcRemoveOrderOnClient();
+        }
+        else
+        {
+            CmdRemoveOrderOnClient();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    [ServerRpc(RequireOwnership = false)]
+    private void CmdRemoveOrderOnClient()
+    {
+        RpcRemoveOrderOnClient();
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    [ObserversRpc]
+    private void RpcRemoveOrderOnClient()
+    {
+        UIManager.Instance.TakeOrder(order);
+        order = null;
+        gameObject.SetActive(false);
     }
 
     ////////////////////////////////////////////////////////////////

@@ -5,7 +5,8 @@ using UnityEngine;
 /////////////////////////////////////////////////////////////////////////////////////
 
 public class Food {
-
+    
+    public Food() { } // Default constructor
     public Food (string name, float price) {
         this.name = name;
         this.price = price;
@@ -19,6 +20,7 @@ public class Food {
 
 public class Order {
 
+    public Order() { } // Default constructor
     public Order (int customerID, List<Food> foods) {
         this.customerID = customerID;
         this.foods = foods;

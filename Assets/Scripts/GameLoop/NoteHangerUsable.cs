@@ -18,9 +18,9 @@ public class NoteHangerUsable : NetworkBehaviour, IUsable
         if( UIManager.Instance.orderList.Count == 0 )
             return;
         int activeNoteObjects = 0;
-        foreach (GameObject noteObj in noteHanger.noteObjList)
+        foreach (NetworkObject noteObj in noteHanger.noteObjList)
         {
-            if (noteObj.activeSelf == true)
+            if (noteObj.gameObject.activeSelf == true)
                 activeNoteObjects++;
         }
         if (activeNoteObjects >= noteHanger.noteObjList.Count)

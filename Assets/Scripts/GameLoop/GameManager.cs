@@ -20,6 +20,7 @@ public class GameManager : NetworkBehaviour, IInitialize
     public Transform spawnPointsParent;
 
     public TimeOfDayClock timeOfDayClock;
+    public NoteHanger noteHanger;
 
     public bool isActive { get; set; } = true;
 
@@ -85,6 +86,8 @@ public class GameManager : NetworkBehaviour, IInitialize
         
         spawnTime = nextSpawnTime;
         timeOfDayClock.Initialize();
+
+        noteHanger.Initialize();
 
         StartGameClientRPC();
     }
