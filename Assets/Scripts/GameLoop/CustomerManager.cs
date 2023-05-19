@@ -94,6 +94,7 @@ public class CustomerManager : NetworkBehaviour, IInitialize
 
             cs.Initialize();
             cs.SetDestination(seat);
+            cs.customerID = seat.id;
             seat.isOccupied = true;
         }
     }
