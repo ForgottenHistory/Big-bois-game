@@ -4,33 +4,6 @@ using UnityEngine;
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-public class Food {
-    
-    public Food() { } // Default constructor
-    public Food (string name, float price) {
-        this.name = name;
-        this.price = price;
-    }
-
-    public string name;
-    public float price;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-
-public class Order {
-
-    public Order() { } // Default constructor
-    public Order (int customerID, List<Food> foods) {
-        this.customerID = customerID;
-        this.foods = foods;
-    }
-    public List<Food> foods = new List<Food>();
-    public int customerID;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-
 public class Seat
 {
     public Seat(GameObject seatObject, int id)

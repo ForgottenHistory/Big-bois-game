@@ -1,35 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using FishNet.Object;
+using System.Linq;
 
-public class NoteHangerUsable : NetworkBehaviour, IUsable
+public class NoteHangerUsable : MonoBehaviour, IUsable
 {
-    ////////////////////////////////////////////////////////////////
+    // Note hanger to set the order on
+    public NoteHanger noteHanger;
+    public bool hold { get; } = false;
 
-    public NoteHanger noteHanger = null;
-
-    public bool hold { get; set; } = false;
-
-    ////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////
+    // On player interact with note hanger, take the last order in hand and set it on the note hanger
     public void Use()
     {
-        if( UIManager.Instance.orderList.Count == 0 )
-            return;
-        int activeNoteObjects = 0;
-        foreach (NetworkObject noteObj in noteHanger.noteObjList)
+        // Find active order in hand using LINQ
+        OrderObject lastOrderObjectInHand = UIManager.Instance.orderObjects.FirstOrDefault(o => o.isActiveAndEnabled);
+        if(lastOrderObjectInHand != null)
         {
-            if (noteObj.gameObject.activeSelf == true)
-                activeNoteObjects++;
+            if ( lastOrderObjectInHand.OrderIsActive == true )
+            {
+                Order lastOrderInHand = lastOrderObjectInHand.order;
+                noteHanger.SetNote( lastOrderInHand );
+                UIManager.Instance.RemoveOrder( lastOrderInHand );
+            }
         }
-        if (activeNoteObjects >= noteHanger.noteObjList.Count)
-            return;
-
-        Order order = UIManager.Instance.orderList[UIManager.Instance.orderList.Count - 1];
-        noteHanger.TakeOrder( order );
-        UIManager.Instance.RemoveOrder( order );
     }
-
-    ////////////////////////////////////////////////////////////////
+ 
+    /////////////////////////////////////////////////////////////////////////////////////
 }

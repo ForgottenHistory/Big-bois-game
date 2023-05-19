@@ -2,95 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object;
+using System.Linq;
 
 public class NoteHanger : NetworkBehaviour, IInitialize
 {
-    ////////////////////////////////////////////////////////////////
-    // Summary:
-    // This class is used to hold notes for players to pick up
-    ////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    public List<NetworkObject> noteObjList { get; set; } = new List<NetworkObject>();
-    public bool isActive { get; set; }
+    public Transform notesParent;
 
-    List<Note> noteList = new List<Note>();
     UIManager uiManager;
+    List<NoteHangerObject> noteHangerObjects = null;
 
-    ////////////////////////////////////////////////////////////////
-    
-    public void Initialize()
-    {
-        Debug.Log("NoteHanger.OnStartClient()");
-        foreach (Transform child in transform)
-        {
-            noteObjList.Add(child.GetComponent<NetworkObject>());
-            noteList.Add(child.GetComponent<Note>());
-            child.gameObject.SetActive(false);
-        }
+    /////////////////////////////////////////////////////////////////////////////////////
 
-        uiManager = UIManager.Instance;
-    }
+    public bool isActive { get; set; } = false;
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void Deinitialize()
     {
+        isActive = false;
+    }
+ 
+    /////////////////////////////////////////////////////////////////////////////////////
+ 
+    public void Initialize()
+    {
+        isActive = true;
+        noteHangerObjects = new List<NoteHangerObject>();
 
+        foreach (Transform child in notesParent)
+        {
+            NoteHangerObject noteHangerObject = child.GetComponent<NoteHangerObject>();
+            noteHangerObjects.Add(noteHangerObject);
+            child.gameObject.SetActive(false);
+        }
     }
 
-    ////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    /*
-    public void TakeOrder(Order order)
+    public void SetNote(Order order)
     {
-        for (int i = 0; i < noteObjList.Count; i++)
+        foreach (NoteHangerObject noteHangerObject in noteHangerObjects)
         {
-            if (noteObjList[i].gameObject.activeSelf == false)
+            if (noteHangerObject.gameObject.activeSelf == false)
             {
-                noteObjList[i].gameObject.SetActive(true);
-                noteList[i].SetOrder(order);
-                break;
+                noteHangerObject.Activate(order);
+                break; 
             }
         }
     }
-    */
 
-    ////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
 
-    public void TakeOrder(Order order)
-    {
-        if (IsServer)
-        {
-            SetOrderOnServer(order);
-        }
-        else
-        {
-            CmdSetOrderOnServer(order);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    [ServerRpc(RequireOwnership = false)]
-    private void CmdSetOrderOnServer(Order order)
-    {
-        SetOrderOnServer(order);
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    [Server]
-    private void SetOrderOnServer(Order order)
-    {
-        foreach (NetworkObject noteObj in noteObjList)
-        {
-            if (!noteObj.gameObject.activeSelf)
-            {
-                noteObj.gameObject.SetActive(true);
-                Note note = noteObj.GetComponent<Note>();
-                note.SetOrder(order);
-                break;
-            }
-        }
-    }
-    
-    ////////////////////////////////////////////////////////////////
 }

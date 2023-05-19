@@ -15,7 +15,11 @@ public class CustomerUsable : NetworkBehaviour, IUsable
     ////////////////////////////////////////////////////////////////
 
     public void Use()
-    {
+    {   
+        if( hasTakenOrder == true )
+            return;
+
+        customerSpawn.order.orderStatus = Order.ORDER_STATUS.TAKEN;
         UIManager.Instance.TakeOrder( customerSpawn.order );
         hasTakenOrder = true;
     }

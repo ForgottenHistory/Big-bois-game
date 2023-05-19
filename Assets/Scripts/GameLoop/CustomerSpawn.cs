@@ -6,6 +6,8 @@ using FishNet.Object;
 using FishNet.Serializing;
 using FishNet.Managing.Server;
 using UnityEngine.AI;
+using FishNet.Object.Synchronizing;
+using System.Linq;
 
 public class CustomerSpawn : NetworkBehaviour, IInitialize
 {
@@ -15,15 +17,19 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
     NavMeshAgent agent;
     Seat seat;
 
+    OrderManager orderManager;
+
     ////////////////////////////////////////////////////////////////
 
     public CustomerUsable customerUsable = null;
 
-    public Order order { get; set; } = null;
+    public Order order = new Order();
 
     bool seated = false;
 
     public bool isActive { get; set; } = true;
+
+    public int customerID { get; set; } = -1;
 
     ////////////////////////////////////////////////////////////////
     // INIT & DEINIT
@@ -35,6 +41,8 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
         customerUsable.customerSpawn = this;
         customerUsable.enabled = false;
         isActive = true;
+
+        orderManager = GameObject.Find("GameManager").GetComponent<OrderManager>();
     }
 
     ////////////////////////////////////////////////////////////////
@@ -90,8 +98,8 @@ public class CustomerSpawn : NetworkBehaviour, IInitialize
         transform.position = seat.GetPosition;
         transform.rotation = seat.GetRotation;
 
-        List<Food> foods = new List<Food>();
-        foods.Add( new Food("Hot dog", 5.0f) );
-        order = new Order(seat.id, foods);
+        order = orderManager.GetNewOrderObserverRpc(customerID);
     }
+ 
+    ////////////////////////////////////////////////////////////////
 }

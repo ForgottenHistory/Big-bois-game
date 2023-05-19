@@ -20,7 +20,10 @@ public class GameManager : NetworkBehaviour, IInitialize
     public Transform spawnPointsParent;
 
     public TimeOfDayClock timeOfDayClock;
-    public NoteHanger noteHanger;
+
+    public NoteHanger noteHanger; 
+
+    public CustomerManager customerManager;
 
     public bool isActive { get; set; } = true;
 
@@ -38,7 +41,6 @@ public class GameManager : NetworkBehaviour, IInitialize
     List<PlayerController> players = new List<PlayerController>();
 
     ServerManager serverManager;
-    CustomerManager customerManager;
 
     float timeOfDay = 0f;
     float spawnTime = 25.0f;
@@ -80,15 +82,18 @@ public class GameManager : NetworkBehaviour, IInitialize
 
         /////////////////////////////////////////////////////////////////////////////////////
 
+        // Initialize customer manager
         customerManager = GetComponent<CustomerManager>();
         customerManager.Initialize();
         customerManager.isActive = true;
         
         spawnTime = nextSpawnTime;
+        
+        // Initialize other managers
         timeOfDayClock.Initialize();
-
         noteHanger.Initialize();
 
+        // Start game
         StartGameClientRPC();
     }
 

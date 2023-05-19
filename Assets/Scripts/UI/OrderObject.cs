@@ -5,12 +5,16 @@ using TMPro;
 
 public class OrderObject : MonoBehaviour
 {
+    /////////////////////////////////////////////////////////////////////////////////////
+
     public TextMeshProUGUI orderText;
     public TextMeshProUGUI tableText;
 
     public Order order { get; set;}
 
     public bool OrderIsActive { get; set; } = false;
+
+    /////////////////////////////////////////////////////////////////////////////////////
 
     public void SetOrderTexts(Order order)
     {   
@@ -23,4 +27,13 @@ public class OrderObject : MonoBehaviour
         tableText.text = "Table\n" + order.customerID.ToString();
         OrderIsActive = true;
     }
+    
+    public void ClearOrderTexts()
+    {
+        orderText.text = "";
+        tableText.text = "";
+        OrderIsActive = false;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
 }
