@@ -25,6 +25,7 @@ public class PlayerController : NetworkBehaviour, IInitialize
     public int owner = 0;
 
     public bool isActive { get; set; } = false;
+    public bool isDebug { get; set; } = false;
 
     /////////////////////////////////////////////////////////////////////////////////////
     // START
@@ -79,6 +80,12 @@ public class PlayerController : NetworkBehaviour, IInitialize
             return;
 
         Movement();
+        ExitGame();
+
+        // Debug
+        SwitchDebugMode();
+        if( isDebug == true)
+            DebugMode();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -117,5 +124,68 @@ public class PlayerController : NetworkBehaviour, IInitialize
         }
 
         characterController.Move(velocity * Time.deltaTime);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // MISC
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    void ExitGame()
+    {
+        if( Input.GetKeyDown(KeyCode.Escape) )
+            Application.Quit();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // DEBUG
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void SwitchDebugMode() {
+        if( Input.GetKeyDown(KeyCode.F1) )
+            isDebug = !isDebug;
+    }
+
+    void DebugMode() {
+
+        // RPC Tests
+        if( Input.GetKeyDown(KeyCode.F2) ) // Server to clients
+            DebugMessageRpc("ObserverRPC Test");
+        else if( Input.GetKeyDown(KeyCode.F3) ) // Client to server to clients
+            DebugMessageServerRpc("ServerRPC Test with no ownership");
+        else if( Input.GetKeyDown(KeyCode.F4) ) // Client to server to clients
+            DebugMessageServerRpcNoOwnership("ServerRPC Test with ownership");
+        else if( Input.GetKeyDown(KeyCode.F5) ) // Client to server
+            DebugMessageServerRpcServerOnly("ServerRPC Test with server only");
+    }
+
+    // Changes made from client to server will be on the server only
+    [ServerRpc]
+    public void DebugMessageServerRpcServerOnly(string message)
+    {
+        // Unless the object is synced through network behaviour this change will only be on the server
+        TMPro.TMP_Text text = GameObject.Find("TestText").GetComponent<TMPro.TMP_Text>();
+        text.text = message;
+    }
+
+    // This will called on the server to clients with no ownership needed of the calling object
+    [ServerRpc]
+    public void DebugMessageServerRpcNoOwnership(string message)
+    {
+        DebugMessageRpc(message);
+    }
+
+    // This will called on the server to clients with ownership needed of the calling object
+    [ServerRpc(RequireOwnership = false)]
+    public void DebugMessageServerRpc(string message)
+    {
+        DebugMessageRpc(message);
+    }
+
+    // From host/server to clients
+    [ObserversRpc]
+    public void DebugMessageRpc(string message)
+    {
+        TMPro.TMP_Text text = GameObject.Find("TestText").GetComponent<TMPro.TMP_Text>();
+        text.text = message;
     }
 }
