@@ -35,6 +35,8 @@ public class PlayerUsable : MonoBehaviour, IInitialize
         isActive = true;
     }
 
+    ////////////////////////////////////////////////////////////////
+
     public void Deinitialize()
     {
     }
@@ -47,34 +49,41 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     {
         if (isActive == false)
             return;
+        CheckUsableObject();
+        UpdateUseText();
+    }
 
-        if (usable != null && useTextObj != null)
+    ////////////////////////////////////////////////////////////////
+    // METHODS
+    ////////////////////////////////////////////////////////////////
+
+    private void CheckUsableObject()
+    {
+        if (usable != null && ((MonoBehaviour)usable).gameObject.activeSelf == false)
+        {
+            usable = null;
+        }
+        if (usable != null)
         {
             bool isHold = usable.hold;
             bool eKeyPressed = isHold ? Input.GetKey(KeyCode.E) : Input.GetKeyDown(KeyCode.E);
-
             if (eKeyPressed)
             {
                 usable.Use();
             }
+        }
+    }
 
-            if (usable is CustomerUsable)
-            {
-                CustomerUsable customerUsable = (CustomerUsable)usable;
-                if (customerUsable.hasTakenOrder == false)
-                {
-                    useText.text = "Press [E] to take order";
-                }
-                else
-                {
-                    useText.text = "You already took this order!";
-                }
-            }
-            else
-            {
-                useText.text = "Press [E] to use";
-            }
+    ////////////////////////////////////////////////////////////////'
+    // UPDATE USE TEXT
+    ////////////////////////////////////////////////////////////////
 
+    private void UpdateUseText()
+    {
+        if (usable != null && useTextObj != null)
+        {
+            UpdateUseTextForCustomerUsable();
+            UpdateUseTextForNonCustomerUsable();
             useTextObj.SetActive(true);
         }
         else if (useTextObj != null)
@@ -84,73 +93,80 @@ public class PlayerUsable : MonoBehaviour, IInitialize
     }
 
     ////////////////////////////////////////////////////////////////
+    // UPDATE USE TEXT FOR CUSTOMER USABLE
+    ////////////////////////////////////////////////////////////////
+
+    private void UpdateUseTextForCustomerUsable()
+    {
+        if (usable is CustomerUsable)
+        {
+            CustomerUsable customerUsable = (CustomerUsable)usable;
+            if (customerUsable.hasTakenOrder == false)
+            {
+                useText.text = "Press [E] to take order";
+            }
+            else
+            {
+                useText.text = "You already took this order!";
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+    // UPDATE USE TEXT FOR NON CUSTOMER USABLE
+    ////////////////////////////////////////////////////////////////
+
+    private void UpdateUseTextForNonCustomerUsable()
+    {
+        if (!(usable is CustomerUsable))
+        {
+            useText.text = "Press [E] to use";
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
     //
     //                      TRIGGERS
     //
     ////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////
+    // ON TRIGGER ENTER
+    ////////////////////////////////////////////////////////////////
+
     private void OnTriggerEnter(Collider other)
     {
         MonoBehaviour[] components = other.GetComponents<MonoBehaviour>();
-        IUsable otherUsable = null;
-
-        foreach (MonoBehaviour component in components)
-        {
-            if (component is IUsable && component.enabled)
-            {
-                otherUsable = (IUsable)component;
-                break;
-            }
-        }
-
+        IUsable otherUsable = GetOtherUsable(components);
         if (otherUsable != null)
         {
-            if (usable != null)
-            {
-                MonoBehaviour usableMonoBehaviour = (MonoBehaviour)usable;
-                MonoBehaviour otherUsableMonoBehaviour = (MonoBehaviour)otherUsable;
-
-                if (otherUsableMonoBehaviour.isActiveAndEnabled)
-                {
-                    //is closer than current usable?
-                    if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usableMonoBehaviour.transform.position, transform.position))
-                    {
-                        usable = otherUsable;
-                    }
-                }
-            }
-            else
-            {
-                usable = otherUsable;
-            }
+            UpdateCurrentUsable(otherUsable, other.gameObject);
         }
     }
 
     ////////////////////////////////////////////////////////////////
 
-private void OnTriggerStay(Collider other)
-{
-    MonoBehaviour[] components = other.GetComponents<MonoBehaviour>();
-    IUsable otherUsable = null;
-
-    foreach (MonoBehaviour component in components)
+    private IUsable GetOtherUsable(MonoBehaviour[] components)
     {
-        if (component is IUsable && component.enabled)
+        foreach (MonoBehaviour component in components)
         {
-            otherUsable = (IUsable)component;
-            break;
+            if (component is IUsable && component.enabled)
+            {
+                return (IUsable)component;
+            }
         }
+        return null;
     }
 
-    if (otherUsable != null)
+    ////////////////////////////////////////////////////////////////
+
+    private void UpdateCurrentUsable(IUsable otherUsable, GameObject other)
     {
         if (usable != null)
         {
             MonoBehaviour usableMonoBehaviour = (MonoBehaviour)usable;
             MonoBehaviour otherUsableMonoBehaviour = (MonoBehaviour)otherUsable;
-
-            //compare usables in area
-            if (Vector3.Distance(other.transform.position, transform.position) < Vector3.Distance(usableMonoBehaviour.transform.position, transform.position))
+            if (otherUsableMonoBehaviour.isActiveAndEnabled && IsCloser(other.gameObject, usableMonoBehaviour.gameObject))
             {
                 usable = otherUsable;
             }
@@ -160,8 +176,53 @@ private void OnTriggerStay(Collider other)
             usable = otherUsable;
         }
     }
-}
 
+    ////////////////////////////////////////////////////////////////
+    // ON TRIGGER STAY
+    ////////////////////////////////////////////////////////////////
+
+    private void OnTriggerStay(Collider other)
+    {
+        IUsable otherUsable = GetOtherUsable(other);
+        if (otherUsable != null)
+        {
+            UpdateCurrentUsable(otherUsable);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    private IUsable GetOtherUsable(Collider other)
+    {
+        MonoBehaviour[] components = other.GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour component in components)
+        {
+            if (component is IUsable && component.enabled)
+            {
+                return (IUsable)component;
+            }
+        }
+        return null;
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    private void UpdateCurrentUsable(IUsable otherUsable)
+    {
+        if (usable != null)
+        {
+            MonoBehaviour usableMonoBehaviour = (MonoBehaviour)usable;
+            MonoBehaviour otherUsableMonoBehaviour = (MonoBehaviour)otherUsable;
+            if (IsCloser(otherUsableMonoBehaviour.gameObject, usableMonoBehaviour.gameObject))
+            {
+                usable = otherUsable;
+            }
+        }
+        else
+        {
+            usable = otherUsable;
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
 
@@ -170,5 +231,15 @@ private void OnTriggerStay(Collider other)
         usable = null;
     }
 
+    ////////////////////////////////////////////////////////////////
+    // IS CLOSER CHECK
+    ////////////////////////////////////////////////////////////////
+
+    private bool IsCloser(GameObject firstObject, GameObject secondObject)
+    {
+        return Vector3.Distance(firstObject.transform.position, transform.position) 
+        < Vector3.Distance(secondObject.transform.position, transform.position);
+    }
+    
     ////////////////////////////////////////////////////////////////
 }
